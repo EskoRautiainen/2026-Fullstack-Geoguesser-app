@@ -7,18 +7,19 @@ import Typography from "@mui/material/Typography";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Button from "@mui/material/Button";
+import { DEFAULT_SETTINGS, ROUNDS } from "../game";
 
 // One segmented control per setting: [state key, label, options]
 const SETTINGS = [
   ["region", "Region", [["europe", "Europe"], ["africa", "Africa"], ["asia", "Asia"]]],
-  ["difficulty", "Difficulty", [["easy", "Easy · 10"], ["hard", "Hard · 25"]]],
+  ["difficulty", "Difficulty", [["easy", `Easy · ${ROUNDS.easy}`], ["hard", `Hard · ${ROUNDS.hard}`]]],
   ["mode", "Mode", [["nameflag", "Name + flag"], ["flag", "Flag only"]]],
 ];
 
 function Home({ setGameConfig }) {
   const navigate = useNavigate();
 
-  const [settings, setSettings] = useState({ region: "europe", difficulty: "easy", mode: "nameflag" });
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   // Start game function. The player's name is asked on the game-over card.
   const startGame = (e) => {

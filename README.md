@@ -121,6 +121,7 @@ Exact versions are listed in each `package.json`.
 │   ├── public/             GeoJSON world map, flag images and sound effects
 │   └── src/
 │       ├── App.jsx                 Routes and shared game settings
+│       ├── game.js                 Game rules: rounds, guesses, scoring, shuffle
 │       ├── theme.js                Material UI theme
 │       ├── playSound.js            Correct / wrong sound effects
 │       └── components/

@@ -8,6 +8,7 @@ import { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from './theme';
+import { DEFAULT_SETTINGS } from './game';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Game from './components/Game'
@@ -16,11 +17,7 @@ import Scores from './components/Scores'
 function App() {
 
 // Store game settings
-const [gameConfig, setGameConfig] = useState({
-    region: "europe",
-    difficulty: "easy",
-    mode: "nameflag",
-  });
+const [gameConfig, setGameConfig] = useState(DEFAULT_SETTINGS);
 
   return (
     <ThemeProvider theme={theme}>

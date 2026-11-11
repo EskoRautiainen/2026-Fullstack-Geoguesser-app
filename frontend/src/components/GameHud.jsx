@@ -2,28 +2,26 @@
 //        GAME HUD: target country, progress and guesses in one compact bar
 //  -------------------------------------------------------------------------------------------------------------------}
 
-const MAX_GUESSES = 3;
+import { MAX_GUESSES } from "../game";
 
-// Flag and/or name, depending on the game mode.
+// The flag, plus the name in "Name + flag" mode.
 // hideName: in flag-only mode the alt text must not reveal the answer.
 function CountryLabel({ country, mode, hideName }) {
     return (
         <>
-            {(mode === "nameflag" || mode === "flag") && (
-                <img
-                    className="flag"
-                    src={country.flag}
-                    alt={hideName && mode === "flag" ? "Flag of the country to find" : `${country.name} flag`}
-                    width={54}
-                    height={36}
-                />
-            )}
+            <img
+                className="flag"
+                src={country.flag}
+                alt={hideName && mode === "flag" ? "Flag of the country to find" : `${country.name} flag`}
+                width={54}
+                height={36}
+            />
             {mode === "nameflag" && <span>{country.name}</span>}
         </>
     );
 }
 
-// Receive props from Map.jsx
+// Receive props from Game.jsx
 export function GameHud({
     points,
     time,
