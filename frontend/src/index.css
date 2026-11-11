@@ -77,3 +77,23 @@ body,
   min-height: 0;
   overflow-y: auto;
 }
+
+/* Home: one card, centred */
+.home {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.home-card {
+  width: min(400px, 100%);
+  padding: 28px;
+}
+
+.home-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+}
