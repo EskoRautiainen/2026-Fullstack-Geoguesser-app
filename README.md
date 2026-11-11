@@ -7,7 +7,7 @@ The project is an npm workspaces monorepo with a **React** frontend and a **Node
 <img width="959" height="446" alt="image" src="https://github.com/user-attachments/assets/4b82be6e-3d55-41fd-b637-720b3b79f6fc" />
 
 
-**Screencast:** https://www.youtube.com/watch?v=hbnEBjjn8ZU
+**Screencast:** https://www.youtube.com/watch?v=skXeN75Vd5g
 
 ## Getting started
 
