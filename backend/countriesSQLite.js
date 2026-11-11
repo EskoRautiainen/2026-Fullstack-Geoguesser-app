@@ -86,7 +86,7 @@ const asiaCountries = {
   Taiwan: "tw",
   Tajikistan: "tj",
   Thailand: "th",
-  "Timor-Leste": "tl",
+  "East Timor": "tl", // Must match the name in GeoJSON.json
   Turkey: "tr",
   Turkmenistan: "tm",
   "United Arab Emirates": "ae",
@@ -113,7 +113,7 @@ const africaCountries = {
   Egypt: "eg",
   "Equatorial Guinea": "gq",
   Eritrea: "er",
-  Eswatini: "sz",
+  eSwatini: "sz", // Must match the name in GeoJSON.json
   Ethiopia: "et",
   Gabon: "ga",
   Gambia: "gm",
@@ -136,7 +136,7 @@ const africaCountries = {
   Niger: "ne",
   Nigeria: "ng",
   Rwanda: "rw",
-  "Sao Tome and Principe": "st",
+  "São Tomé and Principe": "st", // Must match the name in GeoJSON.json
   Senegal: "sn",
   Seychelles: "sc",
   "Sierra Leone": "sl",
@@ -144,7 +144,7 @@ const africaCountries = {
   "South Africa": "za",
   "South Sudan": "ss",
   Sudan: "sd",
-  Tanzania: "tz",
+  "United Republic of Tanzania": "tz", // Must match the name in GeoJSON.json
   Togo: "tg",
   Tunisia: "tn",
   Uganda: "ug",
