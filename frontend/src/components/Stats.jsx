@@ -1,79 +1,70 @@
 // --------------------------------------------------------------------------------------------------------------------}
-//        DISPLAY FLAGS AND COUNTRY NAMES IN GAME
+//        GAME HUD: target country, progress and guesses in one compact bar
 //  -------------------------------------------------------------------------------------------------------------------}
 
-// Receieve props from Map.jsx
-export function StatsGrid1({
+const MAX_GUESSES = 3;
+
+// Flag and/or name, depending on the game mode.
+// hideName: in flag-only mode the alt text must not reveal the answer.
+function CountryLabel({ country, mode, hideName }) {
+    return (
+        <>
+            {(mode === "nameflag" || mode === "flag") && (
+                <img
+                    className="flag"
+                    src={country.flag}
+                    alt={hideName && mode === "flag" ? "Flag of the country to find" : `${country.name} flag`}
+                    width={36}
+                    height={24}
+                />
+            )}
+            {mode === "nameflag" && <span>{country.name}</span>}
+        </>
+    );
+}
+
+// Receive props from Map.jsx
+export function GameHud({
     points,
     time,
     score,
     targetCountries,
     currentIndex,
-
-    
-}) {
-    return (
-    //  stats-grid is defined in App.css
-    <div className="stats-grid1">
-      {/* <div> is one grid cell. <p> will not work with grid. */}
-        <div>Total points: <b>{points}</b></div>
-        <div>Time: <b>{time}</b></div>
-        <div>Score: <b>{score} / {targetCountries.length}</b></div>
-        <div>Round: <b>{currentIndex + 1} / {targetCountries.length}</b></div>
-    </div>
-    );
-}
-
-export function StatsGrid2({
     currentTarget,
     clickedCountry,
-    mode
+    lastGuess,
+    attempt,
+    mode,
 }) {
+    const total = targetCountries.length;
+
     return (
-    <div className="stats-grid2">
-        <div>
-            Click on: {" "}
-            {currentTarget && (
-            <b>
-            {(mode === "nameflag" || mode === "flag") && (
-            <img
-                src={currentTarget.flag}
-                // In flag-only mode the alt text must not reveal the answer
-                alt={mode === "nameflag" ? `${currentTarget.name} flag` : "Flag of the country to find"}
-                width={40}
-                height={25}
-                style={{ margin: "0 5px" }}
-            />
+    <header className="hud">
+        <div className="hud-target">
+            <span className="hud-label">Find</span>
+            {currentTarget && <CountryLabel country={currentTarget} mode={mode} hideName />}
+        </div>
+
+        <div className="hud-stats">
+            <span><small>Round</small> <b>{currentIndex + 1}/{total}</b></span>
+            <span><small>Correct</small> <b>{score}/{total}</b></span>
+            <span><small>Points</small> <b>{points}</b></span>
+            <span><small>Time</small> <b>{time}s</b></span>
+        </div>
+
+        <div className="hud-guess">
+            {clickedCountry && lastGuess && (
+                <span className={`last-guess ${lastGuess.isCorrect ? "good" : "bad"}`} title="You clicked">
+                    {lastGuess.isCorrect ? "✓" : "✗"}
+                    <CountryLabel country={clickedCountry} mode={mode} />
+                </span>
             )}
-                {mode === "nameflag"
-                    ? currentTarget.name
-                    : "" // Show empty string if mode is not "nameflag"
-                }
-            </b>
-        )}
-    </div>
-<div>
-            You clicked: {" "}
-            {clickedCountry ? (
-            <b>
-            {(mode === "nameflag" || mode === "flag") && (
-            <img
-                src={clickedCountry.flag}
-                alt={`${clickedCountry.name} flag`}
-                width={40}
-                height={25}
-                style={{ margin: "0 5px" }}
-            />
-            )}
-                {mode === "nameflag"
-                    ? clickedCountry.name
-                    : ""
-                }
-            </b>
-        ) :  (
-            <b>-</b> // Display "-" if no country has been clicked
-        )}
-    </div>
-    </div>
+            <span className="guesses" role="img" aria-label={`${attempt} of ${MAX_GUESSES} guesses left`}>
+                {Array.from({ length: MAX_GUESSES }, (_, i) => (
+                    <i key={i} className={i < attempt ? "left" : ""} />
+                ))}
+            </span>
+        </div>
+    </header>
     );
 }

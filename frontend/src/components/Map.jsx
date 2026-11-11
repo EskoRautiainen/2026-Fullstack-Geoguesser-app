@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
-import { StatsGrid1, StatsGrid2 } from "./Stats";
+import { GameHud } from "./Stats";
 import Controls from "./Controls";
 import playSound from "./PlayAudio";
 import { Link } from "react-router-dom";
@@ -218,25 +218,21 @@ useEffect(() => {
 // --------------------------------------------------------------------------------------------------------------------
 return (
     <div className="game">
-      <StatsGrid1
+      <GameHud
         points={points}
         time={time}
         score={score}
         targetCountries={targetCountries}
         currentIndex={currentIndex}
-      />
-
-      <StatsGrid2
-        attempt={attempt}
         currentTarget={currentTarget}
-        clickedCountry = {clickedCountry}
+        clickedCountry={clickedCountry}
+        lastGuess={lastGuess}
+        attempt={attempt}
         mode={gameConfig.mode}
       />
 
       <div className="stats-grid3">
-        {!gameOver ? (
-          <p><b>Guesses remaining: {attempt}</b></p>
-        ) : (
+        {gameOver && (
           <>
           <p><b>GAME OVER!</b></p>
           <Button
