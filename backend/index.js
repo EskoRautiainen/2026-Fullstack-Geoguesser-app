@@ -36,7 +36,7 @@ let db;
 // --------------------------------------------------------------------------------------------------------------------
 //        LAUNCH SERVER
 // --------------------------------------------------------------------------------------------------------------------
-// Create in-memory SQLite database and connect to it
+// Open the SQLite database file and connect to it
 async function startServer() {
 db = await createConnection();
 
@@ -71,6 +71,12 @@ try {
   findAfrica(app, db);
   findAsia(app, db);
 
+  // Serve index.html for client-side routes (/play, /scores), so refreshing those pages does not return 404.
+  // Paths under /api/ are excluded, so unknown API endpoints still return 404.
+  app.get(/^\/(?!api\/).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+  });
+
 // Listen to port
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
@@ -84,9 +90,15 @@ app.listen(port, () => {
 // Start server
 startServer();
 
-// Include graceful shutdown handler, so that database can be closed cleanly when server is stopped with Ctrl+C
-process.on("SIGINT", () => {
-  db.close();
-  console.log("Database connection closed.")
+// Close the database cleanly when the server is stopped with Ctrl+C (SIGINT) or by Docker (SIGTERM)
+async function shutdown(signal) {
+  console.log(`${signal} received, shutting down.`);
+  if (db) {
+    await db.close(); // db is undefined if startup failed before connecting
+    console.log("Database connection closed.");
+  }
   process.exit(0);
-});
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
