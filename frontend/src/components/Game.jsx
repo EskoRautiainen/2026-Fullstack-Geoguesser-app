@@ -10,7 +10,7 @@ import { ROUNDS, MAX_GUESSES, REVEAL_MS, roundPoints, finalScore, shuffle } from
 import "./Game.css";
 
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
+const MAX_ZOOM = 12; // Close enough to click small countries such as Malta or Luxembourg
 const ZOOM_STEP = 1.5;
 
 const COLORS = {
@@ -216,7 +216,13 @@ function Game({ gameConfig }) {
 
       <div className="map">
         <ComposableMap projectionConfig={{ scale: 150 }} style={{ width: "100%", height: "100%" }}>
-          <ZoomableGroup center={position.coordinates} zoom={position.zoom} onMoveEnd={setPosition}>
+          <ZoomableGroup
+            center={position.coordinates}
+            zoom={position.zoom}
+            minZoom={MIN_ZOOM} // Same limits for the mouse wheel / pinch as for the buttons
+            maxZoom={MAX_ZOOM}
+            onMoveEnd={setPosition}
+          >
             <Geographies geography={geoData}>
               {({ geographies }) =>
                 geographies.map((geo) => {
