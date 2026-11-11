@@ -8,8 +8,31 @@ GET http://localhost:3000/
 ### Get game data
 GET http://localhost:3000/api/gamedata
 
-### Post game data
+### Post game data (expects 201 Created)
 POST http://localhost:3000/api/gamedata
+Content-Type: application/json
+
+{
+  "points": 512.4,
+  "mode": "nameflag",
+  "region": "europe",
+  "difficulty": "easy",
+  "time": 95,
+  "username": "tester"
+}
+
+### Post invalid game data (expects 400 Bad Request)
+POST http://localhost:3000/api/gamedata
+Content-Type: application/json
+
+{
+  "points": "lots",
+  "mode": "nameflag",
+  "region": "europe",
+  "difficulty": "easy",
+  "time": 95,
+  "username": ""
+}
 
 ### Get europe data
 GET http://localhost:3000/api/europe
@@ -19,5 +42,3 @@ GET http://localhost:3000/api/africa
 
 ### Get asia data
 GET http://localhost:3000/api/asia
-
-

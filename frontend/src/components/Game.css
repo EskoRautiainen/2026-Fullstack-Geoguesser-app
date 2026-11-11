@@ -1,0 +1,234 @@
+/* --------------------------------------------------------------------------------------------------------------------
+        GAME PAGE: the map takes every pixel the header does not need
+   -------------------------------------------------------------------------------------------------------------------- */
+.game {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.map {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.map svg {
+  display: block;
+}
+
+.zoom-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.zoom-controls button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.zoom-controls button + button {
+  border-top: 1px solid var(--border);
+}
+
+.zoom-controls button:hover {
+  background: var(--border);
+}
+
+/* --------------------------------------------------------------------------------------------------------------------
+        HUD: one row on desktop, two on phones
+   -------------------------------------------------------------------------------------------------------------------- */
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 20px;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.hud-target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.hud-label,
+.hud-stats small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-stats {
+  display: flex;
+  gap: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-guess {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flag {
+  width: 54px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.last-guess {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.last-guess .flag {
+  width: 36px;
+  height: 24px;
+}
+
+.last-guess.good {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--good);
+}
+
+.last-guess.bad {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--bad);
+}
+
+.guesses {
+  display: flex;
+  gap: 5px;
+}
+
+.guesses i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.guesses i.left {
+  background: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .hud {
+    padding: 6px 12px;
+  }
+
+  /* Row 1: target + guesses. Row 2: the stats, spread across. */
+  .hud-target {
+    flex: 1;
+  }
+
+  .hud-guess {
+    order: 1;
+  }
+
+  .hud-stats {
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* --------------------------------------------------------------------------------------------------------------------
+        GAME OVER CARD (over the map)
+   -------------------------------------------------------------------------------------------------------------------- */
+.game-over {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(10, 11, 13, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.game-over-card {
+  width: min(340px, 100%);
+  padding: 24px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.game-over-card p {
+  margin: 0;
+}
+
+.game-over-card .final-points {
+  margin: 4px 0;
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.final-points small {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.final-detail {
+  color: var(--muted);
+}
+
+.save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.game-over-card .save-done {
+  margin-top: 20px;
+  color: var(--good);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.game-over-card .save-error {
+  color: var(--bad);
+  font-size: 0.875rem;
+}
+
+.game-over-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+}

@@ -1,92 +1,71 @@
 // --------------------------------------------------------------------------------------------------------------------
 //        SET UP EXPRESS SERVER
 // --------------------------------------------------------------------------------------------------------------------
-// Import Express framework - minimal Node.js web server library
-const express = require('express')
-
-// Import database connection
-const createConnection = require('./connection')
-
-// Import routes
-const { findGameData, postGameData, findEurope, findAfrica, findAsia} = require('./routes')
-
-// Import SQLite logic
-const { addContinent} = require('./countriesSQLite')
-
-// Node.js path module for resolving file paths
 const path = require("path");
+const express = require("express");
+const createConnection = require("./connection");
+const { registerRoutes } = require("./routes");
+const { seedCountries } = require("./countriesSQLite");
 
-// Define default port and its backup
-// While in developement, we use port 3000. Render will generate its own .env file.
+// Hosting platforms set PORT; 3000 is the local default
 const port = process.env.PORT || 3000;
 
-// Create an Express app
-const app = express()
-
-// Parse json requests
+const app = express();
 app.use(express.json());
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve the built frontend (copied into public/ by the Docker build)
+app.use(express.static(path.join(__dirname, "public")));
 
-// Define database outside of function. Can be accessed globally.
+// Kept at module level so shutdown() can close it
 let db;
-
 
 // --------------------------------------------------------------------------------------------------------------------
 //        LAUNCH SERVER
 // --------------------------------------------------------------------------------------------------------------------
-// Create in-memory SQLite database and connect to it
 async function startServer() {
-db = await createConnection();
+  try {
+    db = await createConnection();
 
+    // points is REAL because final scores have one decimal
+    await db.exec(`CREATE TABLE IF NOT EXISTS gamedata (
+      gameId INTEGER PRIMARY KEY AUTOINCREMENT,
+      points REAL NOT NULL,
+      region TEXT NOT NULL,
+      difficulty TEXT NOT NULL,
+      mode TEXT NOT NULL,
+      time INTEGER NOT NULL,
+      username TEXT NOT NULL
+    )`);
 
-// --------------------------------------------------------------------------------------------------------------------
-//        CREATE SQL TABLES & INSERT INTO THEM
-// --------------------------------------------------------------------------------------------------------------------
-try {
-  // Create gamedata table
-  await db.exec(`CREATE TABLE IF NOT EXISTS gamedata (
-    gameId INTEGER PRIMARY KEY AUTOINCREMENT,
-    points INTEGER NOT NULL,
-    region TEXT NOT NULL,
-    difficulty TEXT NOT NULL,
-    mode TEXT NOT NULL,
-    time INTEGER NOT NULL,
-    username TEXT NOT NULL
-  )`);
+    await seedCountries(db);
+    registerRoutes(app, db);
 
-  // Add countries to SQLite. App.jsx will use it later.
-  await addContinent(db, "europe");
-  await addContinent(db, "africa");
-  await addContinent(db, "asia");
+    // Serve index.html for client-side routes (/play, /scores), so refreshing those pages does not return 404.
+    // Paths under /api/ are excluded, so unknown API endpoints still return 404.
+    app.get(/^\/(?!api\/).*/, (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
 
-
-// --------------------------------------------------------------------------------------------------------------------
-//        REGISTER ROUTE HANDLERS
-// --------------------------------------------------------------------------------------------------------------------
-  findGameData(app, db);
-  postGameData(app, db);
-  findEurope(app, db);
-  findAfrica(app, db);
-  findAsia(app, db);
-
-// Listen to port
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-} catch (err) {
+    app.listen(port, () => {
+      console.log(`Server listening on http://localhost:${port}`);
+    });
+  } catch (err) {
     console.error("Server startup failed:", err.message);
     process.exit(1);
-    }
+  }
 }
 
-// Start server
 startServer();
 
-// Include graceful shutdown handler, so that database can be closed cleanly when server is stopped with Ctrl+C
-process.on("SIGINT", () => {
-  db.close();
-  console.log("Database connection closed.")
+// Close the database cleanly when the server is stopped with Ctrl+C (SIGINT) or by Docker (SIGTERM)
+async function shutdown(signal) {
+  console.log(`${signal} received, shutting down.`);
+  if (db) {
+    await db.close(); // db is undefined if startup failed before connecting
+    console.log("Database connection closed.");
+  }
   process.exit(0);
-});
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));

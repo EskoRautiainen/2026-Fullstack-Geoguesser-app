@@ -14,5 +14,5 @@ export default defineConfig({
   resolve: {
     preserveSymlinks: true,
   },
-  cacheDir: path.resolve(__dirname, "../.vite-cache"),
+  cacheDir: path.resolve(import.meta.dirname, "../.vite-cache"), // ES modules have no __dirname
 });

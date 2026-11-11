@@ -3,3 +3,11 @@ services:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      # Store the database on the named volume below, so scores survive container rebuilds
+      - DB_PATH=/app/data/database.db
+    volumes:
+      - db-data:/app/data
+
+volumes:
+  db-data:

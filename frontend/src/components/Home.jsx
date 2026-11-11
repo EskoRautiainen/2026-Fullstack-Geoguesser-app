@@ -2,32 +2,29 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 // MUI imports
-import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormLabel from "@mui/material/FormLabel";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import theme from "./Theme";
-import TextField from "@mui/material/TextField";
-import { ThemeProvider } from "@mui/material/styles";
+import { DEFAULT_SETTINGS, ROUNDS } from "../game";
+
+// One segmented control per setting: [state key, label, options]
+const SETTINGS = [
+  ["region", "Region", [["europe", "Europe"], ["africa", "Africa"], ["asia", "Asia"]]],
+  ["difficulty", "Difficulty", [["easy", `Easy · ${ROUNDS.easy}`], ["hard", `Hard · ${ROUNDS.hard}`]]],
+  ["mode", "Mode", [["nameflag", "Name + flag"], ["flag", "Flag only"]]],
+];
 
 function Home({ setGameConfig }) {
   const navigate = useNavigate();
 
-  const [region, setRegion] = useState("europe");
-  const [difficulty, setDifficulty] = useState("easy");
-  const [mode, setMode] = useState("nameflag");
-  const [username, setUsername] = useState("");
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
-  // Start game function
-  const startGame = () => {
-    if (!username) return; // Don't start game if username is empty
-
-    setGameConfig({region, difficulty, mode, username});
+  // Start game function. The player's name is asked on the game-over card.
+  const startGame = (e) => {
+    e.preventDefault();
+    setGameConfig(settings);
     navigate("/play");
 };
 
@@ -36,75 +33,33 @@ function Home({ setGameConfig }) {
 // --------------------------------------------------------------------------------------------------------------------
 
 return (
-    <ThemeProvider theme={theme}>
-    <Container>
-      <Box sx={{ bgcolor: "gray", mt: 2}}>
-      <Typography variant="h4" sx={{ py: 4}}>
-        CountryGuesser
-      </Typography>
+    <div className="home">
+      <Paper component="form" onSubmit={startGame} variant="outlined" className="home-card">
+        <Typography variant="h5" component="h1" fontWeight={700}>GeoGuesser</Typography>
+        <Typography color="text.secondary" sx={{ mb: 1 }}>Find countries on the map.</Typography>
 
-      {/* Region */}
-      <FormControl component="fieldset">
-        <FormLabel
-        sx={{color: "black"}}
-        > Region </FormLabel>
-          <RadioGroup
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
+        {SETTINGS.map(([key, label, options]) => (
+          <div key={key} className="home-setting">
+            <Typography id={`${key}-label`} variant="caption" color="text.secondary">{label}</Typography>
+            <ToggleButtonGroup
+              exclusive fullWidth size="small" color="primary"
+              aria-labelledby={`${key}-label`}
+              value={settings[key]}
+              // Clicking the selected option gives null: keep the current choice
+              onChange={(_, value) => value && setSettings(s => ({ ...s, [key]: value }))}
             >
-            
-            <FormControlLabel value="europe" control={<Radio />} label="Europe" />
-            <FormControlLabel value="africa" control={<Radio />} label="Africa" />
-            <FormControlLabel value="asia" control={<Radio />} label="Asia" />
-          </RadioGroup>
-      </FormControl>
+              {options.map(([value, text]) => (
+                <ToggleButton key={value} value={value}>{text}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </div>
+        ))}
 
-      {/* Difficulty */}
-      <FormControl component="fieldset">
-        <FormLabel
-        sx={{color: "black"}}
-        > Difficulty </FormLabel>
-          <RadioGroup
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            >
-            
-            <FormControlLabel value="easy" control={<Radio />} label="Easy" />
-            <FormControlLabel value="hard" control={<Radio />} label="Hard" />
-          </RadioGroup>
-      </FormControl>
-
-      {/* Mode */}
-      <FormControl component="fieldset">
-        <FormLabel
-        sx={{color: "black", }}
-        > Mode </FormLabel>
-          <RadioGroup
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-            >
-            
-            <FormControlLabel value="nameflag" control={<Radio />} label="Name and flag" />
-            <FormControlLabel value="flag" control={<Radio />} label="Flag only" />
-          </RadioGroup>
-      </FormControl>
-      </Box>
-      
-      {/* Username */}
-      <Box sx={{ bgcolor: "gray", p:2 }}>
-        <TextField id="filled-basic" label="Enter your name" variant="outlined" required
-        value = {username}
-        onChange={(e) => setUsername(e.target.value)} />
-      </Box>
-
-      {/* Start button */}
-      <Box sx={{ bgcolor: "gray", p:2 }}>
-        <Button variant="contained" onClick={startGame} sx={{ bgcolor: "#ffff00", color: "black"}}>
+        <Button type="submit" variant="contained" size="large" fullWidth autoFocus sx={{ mt: 3 }}>
           Start
         </Button>
-      </Box>
-    </Container>
-    </ThemeProvider>
+      </Paper>
+    </div>
   );
 }
 

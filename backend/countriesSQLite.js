@@ -86,7 +86,7 @@ const asiaCountries = {
   Taiwan: "tw",
   Tajikistan: "tj",
   Thailand: "th",
-  "Timor-Leste": "tl",
+  "East Timor": "tl", // Must match the name in GeoJSON.json
   Turkey: "tr",
   Turkmenistan: "tm",
   "United Arab Emirates": "ae",
@@ -113,7 +113,7 @@ const africaCountries = {
   Egypt: "eg",
   "Equatorial Guinea": "gq",
   Eritrea: "er",
-  Eswatini: "sz",
+  eSwatini: "sz", // Must match the name in GeoJSON.json
   Ethiopia: "et",
   Gabon: "ga",
   Gambia: "gm",
@@ -136,7 +136,7 @@ const africaCountries = {
   Niger: "ne",
   Nigeria: "ng",
   Rwanda: "rw",
-  "Sao Tome and Principe": "st",
+  "São Tomé and Principe": "st", // Must match the name in GeoJSON.json
   Senegal: "sn",
   Seychelles: "sc",
   "Sierra Leone": "sl",
@@ -144,7 +144,7 @@ const africaCountries = {
   "South Africa": "za",
   "South Sudan": "ss",
   Sudan: "sd",
-  Tanzania: "tz",
+  "United Republic of Tanzania": "tz", // Must match the name in GeoJSON.json
   Togo: "tg",
   Tunisia: "tn",
   Uganda: "ug",
@@ -158,26 +158,33 @@ const countriesByContinent = {
   africa: africaCountries
 };
 
-// --------------------------------------------------------------------------------------------------------------------
-//        REUSABLE SQL LOGIC
-// --------------------------------------------------------------------------------------------------------------------
-async function addContinent(db, continent) {
-  const countries = countriesByContinent[continent];
-  
-  // Create table for continent if not exists
-  await db.exec(`CREATE TABLE IF NOT EXISTS ${continent} (
-  countryId INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  code TEXT NOT NULL
-)`);
+// Region names double as table names and as the /api/:region paths
+const REGIONS = Object.keys(countriesByContinent);
 
-  // Insert countries incrementally
-  for (let name of Object.keys(countries)) {
-    const code = countries[name]
-    await db.run(`INSERT INTO ${continent} (name, code) VALUES (?, ?)`, [name, code]);
-}
+// --------------------------------------------------------------------------------------------------------------------
+//        SEED THE COUNTRY TABLES
+// --------------------------------------------------------------------------------------------------------------------
+// The database persists between restarts, so each table is emptied and refilled instead of appended to.
+// One transaction keeps the tables from being seen half-filled.
+async function seedCountries(db) {
+  await db.exec("BEGIN");
+  try {
+    for (const region of REGIONS) {
+      await db.exec(`CREATE TABLE IF NOT EXISTS ${region} (
+        countryId INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        code TEXT NOT NULL
+      )`);
+      await db.run(`DELETE FROM ${region}`);
+      for (const [name, code] of Object.entries(countriesByContinent[region])) {
+        await db.run(`INSERT INTO ${region} (name, code) VALUES (?, ?)`, [name, code]);
+      }
+    }
+    await db.exec("COMMIT");
+  } catch (err) {
+    await db.exec("ROLLBACK");
+    throw err;
+  }
 }
 
-module.exports = {
-  addContinent
-}
+module.exports = { REGIONS, seedCountries };

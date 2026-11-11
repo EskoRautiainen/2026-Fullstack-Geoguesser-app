@@ -1,121 +1,152 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #141518;
+  --surface: #1d1f24;
+  --border: #2a2d34;
+  --text: #e8e9ec;
+  --muted: #8b8f98;
+  --accent: #facc15;
+  --good: #22c55e;
+  --bad: #ef4444;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
+html,
+body,
+#root {
+  height: 100%;
   margin: 0;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+/* The navbar takes what it needs; the page gets the rest. The game page never scrolls. */
+.app {
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px;
+  height: 48px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar a {
+  color: var(--muted);
+  text-decoration: none;
   font-weight: 500;
-  color: var(--text-h);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+.navbar a:hover,
+.navbar a.active {
+  color: var(--text);
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+
+.navbar .brand {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
-p {
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-links a {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.nav-links a.active {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Home: one card, centred */
+.home {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.home-card {
+  width: min(400px, 100%);
+  padding: 28px;
+}
+
+/* Scores: two boards side by side, stacked on phones */
+.scores {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.board-list {
+  list-style: none;
   margin: 0;
+  padding: 0;
 }
 
-.mainMenu {
-  max-width: 400px;
-  margin: 50px auto;
-  text-align: left;
+.board-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
 }
 
-.mainMenu h3 {
-  margin-top: 20px;
+.board-list .rank {
+  width: 24px;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: right;
 }
 
-.mainMenu label {
-  display: block;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 6px;
+.board-list .rank.top {
+  color: var(--accent);
 }
 
-.mainMenu label:hover {
-  background-color: #f0f0f0;
+.board-list .player {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
 }
 
-.mainMenu input[type="radio"] {
-  margin-right: 10px;
+.board-list small {
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.home-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
 }
