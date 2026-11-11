@@ -231,22 +231,6 @@ return (
         mode={gameConfig.mode}
       />
 
-      <div className="stats-grid3">
-        {gameOver && (
-          <>
-          <p><b>GAME OVER!</b></p>
-          <Button
-            component={Link}
-            to="/"
-            variant="contained"
-            size="small"
-            sx={{ bgcolor: "#ffff00", color: "black", mt: 1 }}
-          >
-          Play again?
-          </Button>
-          </>
-        )}
-      </div>
 
 
 {/* --------------------------------------------------------------------------------------------------------------------}
@@ -316,6 +300,20 @@ return (
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
       />
+
+      {gameOver && (
+        <div className="game-over" role="dialog" aria-labelledby="game-over-title">
+          <div className="game-over-card">
+            <p id="game-over-title" className="hud-label">Game over</p>
+            <p className="final-points">{points} <small>pts</small></p>
+            <p className="final-detail">{score}/{targetCountries.length} correct · {time}s</p>
+            <div className="game-over-actions">
+              <Button component={Link} to="/" variant="contained">Play again</Button>
+              <Button component={Link} to="/scores" variant="outlined">Scores</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   </div>
 )};
