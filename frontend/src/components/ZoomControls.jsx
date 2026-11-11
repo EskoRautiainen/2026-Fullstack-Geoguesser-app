@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 // Use prop destructuring. Expect two functions as props.
-function Controls({ onZoomIn, onZoomOut }) {
+function ZoomControls({ onZoomIn, onZoomOut }) {
     return (
     <div className="zoom-controls">
         {/* Pass the function. Don't call it yet. NO {onZoomIn()}.*/}
@@ -13,4 +13,4 @@ function Controls({ onZoomIn, onZoomOut }) {
     );
 }
 
-export default Controls;
+export default ZoomControls;

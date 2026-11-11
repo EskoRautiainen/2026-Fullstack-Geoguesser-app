@@ -3,7 +3,7 @@
 //  -------------------------------------------------------------------------------------------------------------------}
 import { createTheme } from "@mui/material/styles";
 
-const Theme = createTheme({
+const theme = createTheme({
     palette: {
         mode: "dark",
         primary: { main: "#facc15" },
@@ -19,4 +19,4 @@ const Theme = createTheme({
     },
 });
 
-export default Theme;
+export default theme;

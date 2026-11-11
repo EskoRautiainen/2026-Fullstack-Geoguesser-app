@@ -120,12 +120,16 @@ Exact versions are listed in each `package.json`.
 ├── frontend/
 │   ├── public/             GeoJSON world map, flag images and sound effects
 │   └── src/
-│       ├── App.jsx         Routes and shared game settings
+│       ├── App.jsx                 Routes and shared game settings
+│       ├── theme.js                Material UI theme
+│       ├── playSound.js            Correct / wrong sound effects
 │       └── components/
-│           ├── Home.jsx    Game setup screen
-│           ├── Map.jsx     Game screen: map, rounds, scoring and timer
-│           ├── Stats.jsx   Score, time, target and last guess
-│           └── Scores.jsx  Scoreboard
+│           ├── Home.jsx            Game setup screen
+│           ├── Game.jsx            Game screen: map, rounds, scoring, timer and game-over card
+│           ├── GameHud.jsx         Target country, round, points, time and guesses left
+│           ├── ZoomControls.jsx    Zoom buttons over the map
+│           ├── Navbar.jsx          Navigation bar
+│           └── Scores.jsx          Scoreboard
 ├── Dockerfile
 └── docker-compose.yml
 ```

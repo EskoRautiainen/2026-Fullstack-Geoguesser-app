@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
-import { GameHud } from "./Stats";
-import Controls from "./Controls";
-import playSound from "./PlayAudio";
+import { GameHud } from "./GameHud";
+import ZoomControls from "./ZoomControls";
+import playSound from "../playSound";
 import { Link } from "react-router-dom";
-import "./../App.css";
+import "./Game.css";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
@@ -38,7 +38,7 @@ function shuffle(items) {
 // --------------------------------------------------------------------------------------------------------------------
 //        GAME STATE
 // --------------------------------------------------------------------------------------------------------------------
-function ClickableMap({ gameConfig }) { 
+function Game({ gameConfig }) { 
   const [geoData, setGeoData] = useState(null);                                 // load geodata from /public 
   const [clickedCountry, setClickedCountry] = useState(null);                   // match clicked country name w/ it's data object
   const [position, setPosition] = useState({ coordinates: [30, 30], zoom: 3 }); // set starting position and zoom level
@@ -307,7 +307,7 @@ return (
     </ZoomableGroup>
     </ComposableMap>
 
-      <Controls
+      <ZoomControls
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
       />
@@ -346,4 +346,4 @@ return (
   </div>
 )};
 
-export default ClickableMap;
+export default Game;

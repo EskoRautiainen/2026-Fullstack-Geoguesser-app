@@ -7,10 +7,10 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import theme from './components/Theme';
+import theme from './theme';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
-import Map from './components/Map'
+import Game from './components/Game'
 import Scores from './components/Scores'
 
 function App() {
@@ -31,7 +31,7 @@ const [gameConfig, setGameConfig] = useState({
           <main className='page'>
             <Routes>
               <Route path="/" element={<Home setGameConfig={setGameConfig}/>} />
-              <Route path="/play" element={<Map gameConfig={gameConfig}/>} />
+              <Route path="/play" element={<Game gameConfig={gameConfig}/>} />
               <Route path="/scores" element={<Scores />} />
             </Routes>
           </main>
