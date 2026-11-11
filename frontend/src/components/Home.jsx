@@ -25,9 +25,10 @@ function Home({ setGameConfig }) {
 
   // Start game function
   const startGame = () => {
-    if (!username) return; // Don't start game if username is empty
+    const name = username.trim();
+    if (!name) return; // Don't start game if username is empty
 
-    setGameConfig({region, difficulty, mode, username});
+    setGameConfig({region, difficulty, mode, username: name});
     navigate("/play");
 };
 
@@ -40,7 +41,7 @@ return (
     <Container>
       <Box sx={{ bgcolor: "gray", mt: 2}}>
       <Typography variant="h4" sx={{ py: 4}}>
-        CountryGuesser
+        GeoGuesser
       </Typography>
 
       {/* Region */}
@@ -94,12 +95,13 @@ return (
       <Box sx={{ bgcolor: "gray", p:2 }}>
         <TextField id="filled-basic" label="Enter your name" variant="outlined" required
         value = {username}
+        slotProps={{ htmlInput: { maxLength: 30 } }} // Same limit as the backend validation
         onChange={(e) => setUsername(e.target.value)} />
       </Box>
 
       {/* Start button */}
       <Box sx={{ bgcolor: "gray", p:2 }}>
-        <Button variant="contained" onClick={startGame} sx={{ bgcolor: "#ffff00", color: "black"}}>
+        <Button variant="contained" onClick={startGame} disabled={!username.trim()} sx={{ bgcolor: "#ffff00", color: "black"}}>
           Start
         </Button>
       </Box>

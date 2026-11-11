@@ -17,7 +17,7 @@ const [gameConfig, setGameConfig] = useState({
     region: "europe",
     difficulty: "easy",
     mode: "nameflag",
-    username: "anomymous user",
+    username: "Anonymous",
   });
 
   return (
