@@ -7,7 +7,6 @@
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
@@ -40,13 +39,8 @@
     --accent: #c084fc;
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
   }
 }
 
@@ -93,29 +87,4 @@ h2 {
 }
 p {
   margin: 0;
-}
-
-.mainMenu {
-  max-width: 400px;
-  margin: 50px auto;
-  text-align: left;
-}
-
-.mainMenu h3 {
-  margin-top: 20px;
-}
-
-.mainMenu label {
-  display: block;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.mainMenu label:hover {
-  background-color: #f0f0f0;
-}
-
-.mainMenu input[type="radio"] {
-  margin-right: 10px;
 }
