@@ -1,51 +1,64 @@
-html, body {
-  background-color: #212121;
-  color: rgba(255, 255, 255, 0.972);
+/* --------------------------------------------------------------------------------------------------------------------
+        GAME PAGE: the map takes every pixel the header does not need
+   -------------------------------------------------------------------------------------------------------------------- */
+.game {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.stats-grid1 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-  font-size: 1.4rem;
+.map {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
+.map svg {
+  display: block;
+}
+
+.zoom-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.zoom-controls button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.zoom-controls button + button {
+  border-top: 1px solid var(--border);
+}
+
+.zoom-controls button:hover {
+  background: var(--border);
+}
+
+/* Old stacked header, replaced by the compact HUD in the next commit */
+.stats-grid1,
 .stats-grid2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 1.4rem;
+  gap: 4px;
+  margin: 8px 0;
+  text-align: center;
 }
 
 .stats-grid3 {
-  margin-bottom: 10px;
-  font-size: 1.4rem;
-}
-
-.controls {
-  margin: 10px;
-}
-
-.controls button {
-  margin: 5px;
-  padding: 5px;
-}
-
-.navBar {
-  font-size: 1.4rem;
-  padding: 5px;
-}
-
-h1 {
-  color: rgba(233, 233, 233, 0.972);
-}
-
-h2 {
-  color: rgba(233, 233, 233, 0.972);
-}
-
-.MuiFormLabel-root.Mui-focused {
-  color: #b53f3f;
+  margin-bottom: 8px;
+  text-align: center;
 }

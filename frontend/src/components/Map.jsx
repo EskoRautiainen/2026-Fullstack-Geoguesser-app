@@ -217,12 +217,7 @@ useEffect(() => {
 //        REACT RENDER
 // --------------------------------------------------------------------------------------------------------------------
 return (
-    <div>
-      <Controls
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-      />
-
+    <div className="game">
       <StatsGrid1
         points={points}
         time={time}
@@ -261,9 +256,10 @@ return (
 {/* --------------------------------------------------------------------------------------------------------------------}
 /*        MAP COMPONENT
 /*  ------------------------------------------------------------------------------------------------------------------*/}
+<div className="map">
 <ComposableMap
   projectionConfig={{ scale: 150 }}             // Define map zoom
-  style={{ width: "100%", height: "900px" }}    // Define map container size
+  style={{ width: "100%", height: "100%" }}     // Fill the space under the header
 >
 
 <ZoomableGroup
@@ -319,6 +315,12 @@ return (
     </Geographies>
     </ZoomableGroup>
     </ComposableMap>
+
+      <Controls
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+      />
+    </div>
   </div>
 )};
 
