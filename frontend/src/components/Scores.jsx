@@ -13,13 +13,14 @@ import { Box} from "@mui/material";
 //        FETCH SCORES
 //  -------------------------------------------------------------------------------------------------------------------}
 
-function Home() {
+function Scores() {
     const [scores, setScores] = useState([]);
 
     useEffect(() => {
         async function fetchScores() {
             try {
                 const res = await fetch("/api/gamedata");
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 setScores(data);
             } catch (err) {
@@ -90,4 +91,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Scores;

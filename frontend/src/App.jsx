@@ -27,7 +27,7 @@ const [gameConfig, setGameConfig] = useState({
         <Routes>
           <Route path="/" element={<Home setGameConfig={setGameConfig}/>} />
           <Route path="/play" element={<Map gameConfig={gameConfig}/>} />
-          <Route path="/scores" element={<Scores gameConfig={gameConfig}/>} />
+          <Route path="/scores" element={<Scores />} />
         </Routes>
       </div>
     </Router>
