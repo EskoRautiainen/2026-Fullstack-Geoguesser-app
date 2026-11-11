@@ -147,12 +147,19 @@
     padding: 6px 12px;
   }
 
+  /* Row 1: target + guesses. Row 2: the stats, spread across. */
   .hud-target {
-    width: 100%;
+    flex: 1;
+  }
+
+  .hud-guess {
+    order: 1;
   }
 
   .hud-stats {
-    gap: 12px;
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
