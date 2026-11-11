@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -62,13 +62,17 @@ function Game({ gameConfig }) {
 // --------------------------------------------------------------------------------------------------------------------
 //        LOAD DATA AND SELECT TARGET COUNTRIES
 // --------------------------------------------------------------------------------------------------------------------
+  // Each effect ignores its result if the screen was left (or the effect re-ran) before the request finished
   useEffect(() => {
+    let ignore = false;
     loadGeoData()
-      .then(setGeoData)
+      .then(data => { if (!ignore) setGeoData(data); })
       .catch(err => console.error("Failed to load GeoJSON:", err));
+    return () => { ignore = true; };
   }, []);
 
   useEffect(() => {
+    let ignore = false;
     async function fetchCountries() {
       try {
         const res = await fetch(`/api/${gameConfig.region}`);
@@ -77,6 +81,7 @@ function Game({ gameConfig }) {
           ...country,
           flag: `/flags/${country.code}.png`,
         }));
+        if (ignore) return;
 
         setAllCountries(countries);
         setTargetCountries(shuffle(countries).slice(0, ROUNDS[gameConfig.difficulty] ?? ROUNDS.easy));
@@ -85,7 +90,12 @@ function Game({ gameConfig }) {
       }
     }
     fetchCountries();
+    return () => { ignore = true; };
   }, [gameConfig]);
+
+  // Cancel a pending answer reveal when the screen is left
+  const revealTimer = useRef(null);
+  useEffect(() => () => clearTimeout(revealTimer.current), []);
 
 // --------------------------------------------------------------------------------------------------------------------
 //        TIMER
@@ -141,7 +151,7 @@ function Game({ gameConfig }) {
     } else if (guessesLeft === 0) {
       // Out of guesses: show the correct country, then move on with no points
       setRevealAnswer(currentTarget.name);
-      setTimeout(() => {
+      revealTimer.current = setTimeout(() => {
         setRevealAnswer(null);
         nextRound(points);
       }, REVEAL_MS);
