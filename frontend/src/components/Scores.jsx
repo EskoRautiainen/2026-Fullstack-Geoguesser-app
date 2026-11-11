@@ -1,13 +1,36 @@
 import { useEffect, useState } from "react";
-import { Container} from "@mui/material";
-import { Typography} from "@mui/material";
-import { Paper} from "@mui/material";
-import { List} from "@mui/material";
-import { ListItem} from "@mui/material";
-import { ListItemText} from "@mui/material";
-import { Divider} from "@mui/material";
-import { Box} from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 
+
+// --------------------------------------------------------------------------------------------------------------------}
+//        ONE LEADERBOARD (games of one mode, best first)
+//  -------------------------------------------------------------------------------------------------------------------}
+
+function Board({ title, games }) {
+    return (
+        <Paper variant="outlined" className="board">
+            <Typography variant="subtitle1" component="h2" fontWeight={700} sx={{ px: 2, py: 1.5 }}>
+                {title}
+            </Typography>
+            {games.length === 0 ? (
+                <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>No games yet.</Typography>
+            ) : (
+                <ol className="board-list">
+                    {games.map((g, i) => (
+                        <li key={g.gameId}> {/* React needs an unique key for each item */}
+                            <span className={`rank ${i < 3 ? "top" : ""}`}>{i + 1}</span>
+                            <span className="player">
+                                {g.username}
+                                <small>{g.region} · {g.difficulty}</small>
+                            </span>
+                            <b>{g.points}</b>
+                        </li>
+                    ))}
+                </ol>
+            )}
+        </Paper>
+    );
+}
 
 // --------------------------------------------------------------------------------------------------------------------}
 //        FETCH SCORES
@@ -34,60 +57,20 @@ function Scores() {
 //        FILTER SCORES
 //  -------------------------------------------------------------------------------------------------------------------}
 
-    const flagName = scores
-        .filter(g => g.mode === "nameflag")
-        .sort((a, b) => b.points - a.points);
-
-    const flagOnly = scores
-        .filter(g => g.mode === "flag")
+    const byMode = (mode) => scores
+        .filter(g => g.mode === mode)
         .sort((a, b) => b.points - a.points);
 
     return (
-        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h4" >
+        <div className="scores">
+            <Typography variant="h5" component="h1" fontWeight={700} sx={{ mb: 2 }}>
                 Scores
             </Typography>
-
-            {/* Flag + Name */}
-            <Box sx={{display: "flex", gap: 2}}> {/* Flex: Put childen side to side. gap: add spacing between columns */}               
-                <Paper sx={{ flex: 1, p: 2 }}>
-                    <Typography variant="h6">Flag + Name</Typography>
-                    <List>
-                        {flagName.map((g, i) => (
-                            <div key={g.gameId}> {/* React needs an unique key for each item */}
-                                <ListItem>
-                                    <ListItemText
-                                        primary={`${g.points} pts | ${g.username}`}
-                                        secondary={`${g.region} | ${g.difficulty}`}
-                                    />
-                                </ListItem>
-                                {/* Add separator line between items. Skip last item */}
-                                {i < flagName.length - 1 && <Divider />}
-                            </div>
-                        ))}
-                    </List>
-                </Paper>
-
-                {/* Flag Only */}
-                <Paper sx={{ flex: 1, p: 2 }}>
-                    <Typography variant="h6">Flag Only</Typography>
-
-                    <List>
-                        {flagOnly.map((g, i) => (
-                            <div key={g.gameId}>
-                                <ListItem>
-                                    <ListItemText
-                                        primary={`${g.points} pts | ${g.username}`}
-                                        secondary={`${g.region} | ${g.difficulty}`}
-                                    />
-                                </ListItem>
-                                {i < flagOnly.length - 1 && <Divider />}
-                            </div>
-                        ))}
-                    </List>
-                </Paper>
-            </Box>
-        </Container>
+            <div className="boards">
+                <Board title="Name + flag" games={byMode("nameflag")} />
+                <Board title="Flag only" games={byMode("flag")} />
+            </div>
+        </div>
     );
 }
 

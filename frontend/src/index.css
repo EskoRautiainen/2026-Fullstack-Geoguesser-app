@@ -91,6 +91,59 @@ body,
   padding: 28px;
 }
 
+/* Scores: two boards side by side, stacked on phones */
+.scores {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.board-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.board-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.board-list .rank {
+  width: 24px;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: right;
+}
+
+.board-list .rank.top {
+  color: var(--accent);
+}
+
+.board-list .player {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}
+
+.board-list small {
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
 .home-setting {
   display: flex;
   flex-direction: column;
