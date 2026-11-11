@@ -7,6 +7,32 @@ import { Link } from "react-router-dom";
 import "./../App.css";
 import Button from "@mui/material/Button";
 
+const ROUNDS = { easy: 10, hard: 25 }; // Number of countries per game
+
+// GeoJSON.json is ~15 MB, so fetch and parse it once and reuse it on later visits to /play.
+let geoDataPromise = null;
+function loadGeoData() {
+  geoDataPromise ??= fetch("/GeoJSON.json")
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .catch(err => {
+      geoDataPromise = null; // Allow a retry on the next visit
+      throw err;
+    });
+  return geoDataPromise;
+}
+
+// Fisher-Yates shuffle. Sorting with Math.random() does not give every order an equal chance.
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 // --------------------------------------------------------------------------------------------------------------------
 //        GAME STATE
@@ -17,21 +43,20 @@ function ClickableMap({ gameConfig }) {
   const [position, setPosition] = useState({ coordinates: [30, 30], zoom: 3 }); // set starting position and zoom level
   const [targetCountries, setTargetCountries] = useState([]);                   // random countries
   const [currentIndex, setCurrentIndex] = useState(0);                          // current country to guess
-  const [score, setScore] = useState(0);                                        // track score x/10
+  const [score, setScore] = useState(0);                                        // number of correct guesses
   const [gameOver, setGameOver] = useState(false);                              // flag game as over
-  const [attempt, setAttempt] = useState(3);                                    // keep track of attemps
+  const [attempt, setAttempt] = useState(3);                                    // guesses left this round
   const [points, setPoints] = useState(0);                                      // keep track of total points
   const [time, setTime] = useState(0);                                          // keep track of time spent playing
   const [lastGuess, setLastGuess] = useState(null);                             // keep track of last guess
   const [allCountries, setAllCountries] = useState([]);                         // store all countries with flags
-  const [revealAnswer, setRevealAnswer] = useState(null);                       // reveal correct location for 1.5s
+  const [revealAnswer, setRevealAnswer] = useState(null);                       // country revealed after 3 wrong guesses
   const hasSaved = useRef(false);
 // --------------------------------------------------------------------------------------------------------------------
 //        LOAD DATA AND SELECT TARGET COUNTRIES FOR THE GAME
 // --------------------------------------------------------------------------------------------------------------------
 useEffect(() => {
-  fetch("/GeoJSON.json")
-    .then(res => res.json())
+  loadGeoData()
     .then(setGeoData)
     .catch(err => console.error("Failed to load GeoJSON:", err));
 }, []); // <-- [] Runs this effect only once.
@@ -55,20 +80,9 @@ async function fetchCountries() {
 
   setAllCountries(countries); // store all countries as data-objects, containing flag images.
 
-  // Easy difficulty
-  if (gameConfig.difficulty === "easy") {
-    const shuffled = countries
-      .sort(() => Math.random() - 0.5) // shuffle
-      .slice(0, 10); // pick first 10. index 0-9
-      setTargetCountries(shuffled);
-
-  } else {
-  // Hard difficulty
-    const shuffled = countries
-      .sort(() => Math.random() - 0.5) // shuffle
-      .slice(0, 25); // pick first 25. index 0-26
-      setTargetCountries(shuffled);
-    }} catch (err) {
+  // Pick a random set of target countries: 10 on easy, 25 on hard
+  setTargetCountries(shuffle(countries).slice(0, ROUNDS[gameConfig.difficulty] ?? ROUNDS.easy));
+  } catch (err) {
       console.error(err);
     }
 }
@@ -104,58 +118,63 @@ const handleMove = (newPosition) => {
 // --------------------------------------------------------------------------------------------------------------------
 //        NEXT ROUND FUNCTION
 // --------------------------------------------------------------------------------------------------------------------
+// newPoints: the points total including the round that just ended
 function nextRound(newPoints) {
-    if (currentIndex + 1 < targetCountries.length) {
-        setCurrentIndex(prev => prev +1);
-        setAttempt(3)
-    } else {
-        setGameOver(true);
-        const finalPoints = Number(
-          (newPoints * 5 / (time / 50 + 1)).toFixed(1)
-        );
-      setPoints(finalPoints);
-      
-      // Protect against double POST
-      if (hasSaved.current) return;
-      hasSaved.current = true;
-
-      // Send game data to backend
-      fetch("/api/gamedata", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-        points: finalPoints,
-        mode: gameConfig.mode,
-        region: gameConfig.region,
-        difficulty: gameConfig.difficulty,
-        username: gameConfig.username,
-        time: time
-      })
-    }).catch(err => console.error("Failed to save game:", err));
+  if (currentIndex + 1 < targetCountries.length) {
+    setPoints(newPoints);
+    setCurrentIndex(currentIndex + 1);
+    setAttempt(3);
+    return;
   }
+
+  // Last round: scale the points by the time taken and save the result
+  const finalPoints = Number(
+    (newPoints * 5 / (time / 50 + 1)).toFixed(1)
+  );
+  setPoints(finalPoints);
+  setGameOver(true);
+
+  // Protect against double POST
+  if (hasSaved.current) return;
+  hasSaved.current = true;
+
+  // Send game data to backend
+  fetch("/api/gamedata", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      points: finalPoints,
+      mode: gameConfig.mode,
+      region: gameConfig.region,
+      difficulty: gameConfig.difficulty,
+      username: gameConfig.username,
+      time: time
+    })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    })
+    .catch(err => console.error("Failed to save game:", err));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //        HANDLE CLICK ON MAP COMPONENT
 // --------------------------------------------------------------------------------------------------------------------
 const handleClickCountry = (name) => {
-  if (attempt == 0)                     // Nothing happens if attempts are 0. (Prevents counter going negative)
+  // Ignore clicks after the game ends, before the targets load, and while the answer is revealed (0 attempts)
+  if (gameOver || !currentTarget || attempt === 0)
     return;
 
-  let newAttempt = attempt - 1;       // Reduce guess attemps by 1
+  const newAttempt = attempt - 1;       // Reduce guess attempts by 1
   setAttempt(newAttempt);
-  if (gameOver)                         // Nothing happens if gameOver state = true.
-    return;
 
   // handleClickCountry gets a country name as string.
   // Match string "Germany" with data-object, where "name:Germany".
-  // Set data-object as clickedCountry, so we can use it's flag.
-  const clickedObject = allCountries.find(c => c.name === name);
-  setClickedCountry(clickedObject)
+  // Set data-object as clickedCountry, so we can use its flag.
+  setClickedCountry(allCountries.find(c => c.name === name));
 
-  const currentTarget = targetCountries[currentIndex];  // Set current target
   const isCorrect = name === currentTarget.name;        // Check, if the guess was correct
   setLastGuess({name, isCorrect})                       // Remember previous guess
   playSound(isCorrect);                                 // Play audio feedback
@@ -163,24 +182,18 @@ const handleClickCountry = (name) => {
 // --------------------------------------------------------------------------------------------------------------------
 //        GUESS RESULTS
 // --------------------------------------------------------------------------------------------------------------------
-  if (name === currentTarget.name) {
-    // Correct result
-    setScore(prev => prev +1);
-    setPoints(prev => { const updated = prev + (newAttempt + 1) * 60
-    nextRound(updated);
-    return updated
-  })
+  if (isCorrect) {
+    // Correct: 180 / 120 / 60 points on the first / second / third guess
+    setScore(prev => prev + 1);
+    nextRound(points + (newAttempt + 1) * 60);
 
-  } else {
-    // Wrong answer
-    if (attempt == 1 && attempt !== 0 ) {
-      setRevealAnswer(currentTarget.name);
-        setTimeout(() => {
-          setRevealAnswer(null); // reset highlight
-          setAttempt(3);
-          nextRound();
-      }, 2500); // flash country location with blue for 2.5 seconds
-    }
+  } else if (newAttempt === 0) {
+    // Out of guesses: flash the correct country blue for 2.5 seconds, then move on with no points
+    setRevealAnswer(currentTarget.name);
+    setTimeout(() => {
+      setRevealAnswer(null); // reset highlight
+      nextRound(points);
+    }, 2500);
   }
 }
 
@@ -188,14 +201,16 @@ const handleClickCountry = (name) => {
 // --------------------------------------------------------------------------------------------------------------------
 //        TIMER
 // --------------------------------------------------------------------------------------------------------------------
+const isLoaded = geoData !== null && targetCountries.length > 0;
+
 useEffect(() => {
-  if (gameOver) return;                       // Timer does not run, while game is over.
+  if (!isLoaded || gameOver) return;          // Timer runs only while the game is playable
 
     const interval = setInterval(() => {
       setTime(prev => prev +1);               // Update every second
     }, 1000);
       return () => clearInterval(interval);   // Cleanup function to prevent react running several intervals at the same time
-}, [gameOver]);                               // Runs when component mounts or gameOver state changes
+}, [isLoaded, gameOver]);                     // Runs when loading finishes or gameOver state changes
 
 
 // --------------------------------------------------------------------------------------------------------------------
