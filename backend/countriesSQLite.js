@@ -171,11 +171,19 @@ async function addContinent(db, continent) {
   code TEXT NOT NULL
 )`);
 
-  // Insert countries incrementally
-  for (let name of Object.keys(countries)) {
-    const code = countries[name]
-    await db.run(`INSERT INTO ${continent} (name, code) VALUES (?, ?)`, [name, code]);
-}
+  // The database persists between restarts, so replace the rows instead of appending to them.
+  // A transaction keeps the table from being seen half-filled.
+  await db.exec("BEGIN");
+  try {
+    await db.run(`DELETE FROM ${continent}`);
+    for (const [name, code] of Object.entries(countries)) {
+      await db.run(`INSERT INTO ${continent} (name, code) VALUES (?, ?)`, [name, code]);
+    }
+    await db.exec("COMMIT");
+  } catch (err) {
+    await db.exec("ROLLBACK");
+    throw err;
+  }
 }
 
 module.exports = {
