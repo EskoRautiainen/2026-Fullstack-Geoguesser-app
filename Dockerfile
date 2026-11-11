@@ -9,11 +9,13 @@ WORKDIR /app
 # Copy package.json files first, before the source code.
 # Docker caches each step (layer). If package.json hasn't changed,
 # Docker reuses the cached npm install and skips it — much faster.
+# npm ci needs every workspace's package.json to match package-lock.json
 COPY package*.json ./
-COPY frontend/package*.json frontend/
+COPY frontend/package.json frontend/
+COPY backend/package.json backend/
 
-# Install dependencies for the frontend workspace
-RUN npm install --workspace=frontend --include=dev
+# Install the exact versions from package-lock.json for the frontend workspace
+RUN npm ci --workspace=frontend --include=dev
 
 # Now copy the frontend source code
 COPY frontend/ frontend/
@@ -27,11 +29,14 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY backend/package*.json backend/
+ENV NODE_ENV=production
 
-# Install only production dependencies (--omit=dev skips devDependencies like testing tools or linters that are not needed in production)
-RUN npm install --omit=dev --workspace=backend
+COPY package*.json ./
+COPY frontend/package.json frontend/
+COPY backend/package.json backend/
+
+# Install only the backend's production dependencies, at the exact versions from package-lock.json
+RUN npm ci --omit=dev --workspace=backend
 
 COPY backend/ backend/
 
@@ -42,4 +47,5 @@ COPY --from=frontend-builder /app/frontend/dist backend/public
 # Expose port 3000 for backend
 EXPOSE 3000
 
-CMD ["npm", "start", "--workspace=backend"]
+# Run node directly instead of through npm, so it receives SIGTERM from `docker stop` and shuts down cleanly
+CMD ["node", "backend/index.js"]
