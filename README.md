@@ -4,7 +4,8 @@ A geography game for learning countries and flags. Players find countries on an 
 
 The project is an npm workspaces monorepo with a **React** frontend and a **Node.js / Express** REST API.
 
-<img width="938" height="986" alt="Game screen with the world map, score, timer and target country" src="https://github.com/user-attachments/assets/78d28209-9cee-4623-aa80-81bcfd688dbc" />
+<img width="959" height="446" alt="image" src="https://github.com/user-attachments/assets/4b82be6e-3d55-41fd-b637-720b3b79f6fc" />
+
 
 **Screencast:** https://www.youtube.com/watch?v=hbnEBjjn8ZU
 
@@ -89,13 +90,15 @@ For example, 1,740 round points in 100 seconds gives 1740 × 5 / 3 = 2,900 point
 
 ### Home page
 
-<img width="539" height="555" alt="Home page with region, difficulty and mode options and a name field" src="https://github.com/user-attachments/assets/0dae6a54-2526-4185-ba3e-2033fb555650" />
+<img width="312" height="323" alt="image" src="https://github.com/user-attachments/assets/42bf4d6e-bcc1-46c5-a071-d0ecde64a8ba" />
+
 
 ### Scoreboard
 
 Results are grouped by game mode and sorted from highest to lowest. Each entry shows the points, player name, region and difficulty.
 
-<img width="1061" height="993" alt="Scoreboard with separate lists for the two game modes" src="https://github.com/user-attachments/assets/aebee42a-b61e-4542-a2c2-b58a0fb498f4" />
+<img width="660" height="138" alt="image" src="https://github.com/user-attachments/assets/dab8cd04-38dc-4761-a191-8483679fa56e" />
+
 
 ## Tech stack
 
