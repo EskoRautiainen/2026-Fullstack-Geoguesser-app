@@ -14,8 +14,8 @@ function CountryLabel({ country, mode, hideName }) {
                     className="flag"
                     src={country.flag}
                     alt={hideName && mode === "flag" ? "Flag of the country to find" : `${country.name} flag`}
-                    width={36}
-                    height={24}
+                    width={54}
+                    height={36}
                 />
             )}
             {mode === "nameflag" && <span>{country.name}</span>}
