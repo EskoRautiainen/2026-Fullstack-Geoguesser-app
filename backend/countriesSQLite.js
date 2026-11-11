@@ -158,26 +158,27 @@ const countriesByContinent = {
   africa: africaCountries
 };
 
-// --------------------------------------------------------------------------------------------------------------------
-//        REUSABLE SQL LOGIC
-// --------------------------------------------------------------------------------------------------------------------
-async function addContinent(db, continent) {
-  const countries = countriesByContinent[continent];
-  
-  // Create table for continent if not exists
-  await db.exec(`CREATE TABLE IF NOT EXISTS ${continent} (
-  countryId INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  code TEXT NOT NULL
-)`);
+// Region names double as table names and as the /api/:region paths
+const REGIONS = Object.keys(countriesByContinent);
 
-  // The database persists between restarts, so replace the rows instead of appending to them.
-  // A transaction keeps the table from being seen half-filled.
+// --------------------------------------------------------------------------------------------------------------------
+//        SEED THE COUNTRY TABLES
+// --------------------------------------------------------------------------------------------------------------------
+// The database persists between restarts, so each table is emptied and refilled instead of appended to.
+// One transaction keeps the tables from being seen half-filled.
+async function seedCountries(db) {
   await db.exec("BEGIN");
   try {
-    await db.run(`DELETE FROM ${continent}`);
-    for (const [name, code] of Object.entries(countries)) {
-      await db.run(`INSERT INTO ${continent} (name, code) VALUES (?, ?)`, [name, code]);
+    for (const region of REGIONS) {
+      await db.exec(`CREATE TABLE IF NOT EXISTS ${region} (
+        countryId INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        code TEXT NOT NULL
+      )`);
+      await db.run(`DELETE FROM ${region}`);
+      for (const [name, code] of Object.entries(countriesByContinent[region])) {
+        await db.run(`INSERT INTO ${region} (name, code) VALUES (?, ?)`, [name, code]);
+      }
     }
     await db.exec("COMMIT");
   } catch (err) {
@@ -186,6 +187,4 @@ async function addContinent(db, continent) {
   }
 }
 
-module.exports = {
-  addContinent
-}
+module.exports = { REGIONS, seedCountries };
