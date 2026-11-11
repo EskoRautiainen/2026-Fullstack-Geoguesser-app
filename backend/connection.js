@@ -12,7 +12,8 @@ try {
 
   if (db) return db; // Prevent creating a new connection if one already exists
   db = await open({
-    filename: path.join(__dirname, 'database.db'),
+    // DB_PATH lets Docker keep the database on a volume. Defaults to backend/database.db.
+    filename: process.env.DB_PATH || path.join(__dirname, 'database.db'),
     driver: sqlite3.Database,
   });
 
