@@ -3,19 +3,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 import { NavLink } from 'react-router-dom';
 
-// Ternary operator highlights selected page as yellow.
-const linkStyle = ({ isActive }) => ({
-  color: isActive ? 'yellow' : 'white',
-  margin: '10px',
-  textDecoration: 'none'
-});
-
 function Navbar() {
   return (
-    <nav className='navBar'>
-      <NavLink to="/" style={linkStyle}>Home</NavLink>
-      <NavLink to="/play" style={linkStyle}>Play</NavLink>
-      <NavLink to="/scores" style={linkStyle}>Scores</NavLink>
+    <nav className='navbar'>
+      <NavLink to="/" className='brand'>GeoGuesser</NavLink>
+      {/* NavLink adds the "active" class to the current page's link */}
+      <div className='nav-links'>
+        <NavLink to="/" end>Home</NavLink>
+        <NavLink to="/play">Play</NavLink>
+        <NavLink to="/scores">Scores</NavLink>
+      </div>
     </nav>
   );
 }
