@@ -1,45 +1,22 @@
 // --------------------------------------------------------------------------------------------------------------------}
-//        SET THEME FOR HOMEPAGE
+//        APP THEME (dark, yellow accent)
 //  -------------------------------------------------------------------------------------------------------------------}
 import { createTheme } from "@mui/material/styles";
 
 const Theme = createTheme({
+    palette: {
+        mode: "dark",
+        primary: { main: "#facc15" },
+        background: { default: "#141518", paper: "#1d1f24" },
+    },
+    shape: { borderRadius: 10 },
+    typography: {
+        fontFamily: "system-ui, 'Segoe UI', Roboto, sans-serif",
+        button: { textTransform: "none", fontWeight: 600 },
+    },
     components: {
-        MuiRadio: {
-            styleOverrides: {
-                root: {
-                    color: "black",
-                    bgcolor: "gray",
-                    "& .MuiSvgIcon-root": {
-                    outline: "none",
-                    },
-
-                "&.Mui-checked": {
-                    color: "#ffff00",
-                },
-
-                "&.Mui-focusVisible": {
-                    outline: "2px solid #ffff00",
-                    outlineOffset: "2px",
-                },
-
-                "&:hover": {
-                    backgroundColor: "rgba(255, 255, 0, 0.1)",
-                    },
-                },
-            },
-        },
-        MuiFormLabel: {
-            styleOverrides: {
-                root: {
-                    "&.Mui-focused": { // Overwrite default focused color
-                    color: "black",
-                    },
-                },
-            },
-        },
+        MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
     },
 });
-
 
 export default Theme;

@@ -5,6 +5,9 @@
 // Imports
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import { useState } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from './components/Theme';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Map from './components/Map'
@@ -21,16 +24,21 @@ const [gameConfig, setGameConfig] = useState({
   });
 
   return (
-    <Router>
-      <Navbar />
-      <div className='app'>
-        <Routes>
-          <Route path="/" element={<Home setGameConfig={setGameConfig}/>} />
-          <Route path="/play" element={<Map gameConfig={gameConfig}/>} />
-          <Route path="/scores" element={<Scores />} />
-        </Routes>
-      </div>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <div className='app'>
+          <Navbar />
+          <main className='page'>
+            <Routes>
+              <Route path="/" element={<Home setGameConfig={setGameConfig}/>} />
+              <Route path="/play" element={<Map gameConfig={gameConfig}/>} />
+              <Route path="/scores" element={<Scores />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
