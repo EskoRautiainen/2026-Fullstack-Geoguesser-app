@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { GameHud } from "./Stats";
 import Controls from "./Controls";
@@ -6,6 +6,7 @@ import playSound from "./PlayAudio";
 import { Link } from "react-router-dom";
 import "./../App.css";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 const ROUNDS = { easy: 10, hard: 25 }; // Number of countries per game
 
@@ -51,7 +52,8 @@ function ClickableMap({ gameConfig }) {
   const [lastGuess, setLastGuess] = useState(null);                             // keep track of last guess
   const [allCountries, setAllCountries] = useState([]);                         // store all countries with flags
   const [revealAnswer, setRevealAnswer] = useState(null);                       // country revealed after 3 wrong guesses
-  const hasSaved = useRef(false);
+  const [playerName, setPlayerName] = useState("");                             // name typed on the game-over card
+  const [saveState, setSaveState] = useState("idle");                           // idle | saving | saved | error
 // --------------------------------------------------------------------------------------------------------------------
 //        LOAD DATA AND SELECT TARGET COUNTRIES FOR THE GAME
 // --------------------------------------------------------------------------------------------------------------------
@@ -127,36 +129,45 @@ function nextRound(newPoints) {
     return;
   }
 
-  // Last round: scale the points by the time taken and save the result
+  // Last round: scale the points by the time taken. The player saves the result from the game-over card.
   const finalPoints = Number(
     (newPoints * 5 / (time / 50 + 1)).toFixed(1)
   );
   setPoints(finalPoints);
   setGameOver(true);
+}
 
-  // Protect against double POST
-  if (hasSaved.current) return;
-  hasSaved.current = true;
+// --------------------------------------------------------------------------------------------------------------------
+//        SAVE SCORE (from the game-over card)
+// --------------------------------------------------------------------------------------------------------------------
+const savedName = playerName.trim() || "Anonymous";
 
-  // Send game data to backend
-  fetch("/api/gamedata", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      points: finalPoints,
-      mode: gameConfig.mode,
-      region: gameConfig.region,
-      difficulty: gameConfig.difficulty,
-      username: gameConfig.username,
-      time: time
-    })
-  })
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    })
-    .catch(err => console.error("Failed to save game:", err));
+async function saveScore(e) {
+  e.preventDefault();
+  if (saveState === "saving" || saveState === "saved") return; // Protect against double POST
+  setSaveState("saving");
+
+  try {
+    const res = await fetch("/api/gamedata", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        points,
+        mode: gameConfig.mode,
+        region: gameConfig.region,
+        difficulty: gameConfig.difficulty,
+        username: savedName,
+        time
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    setSaveState("saved");
+  } catch (err) {
+    console.error("Failed to save game:", err);
+    setSaveState("error"); // Keep the form so the player can try again
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -307,8 +318,25 @@ return (
             <p id="game-over-title" className="hud-label">Game over</p>
             <p className="final-points">{points} <small>pts</small></p>
             <p className="final-detail">{score}/{targetCountries.length} correct · {time}s</p>
+
+            {saveState === "saved" ? (
+              <p className="save-done">Saved as {savedName}</p>
+            ) : (
+              <form className="save-form" onSubmit={saveScore}>
+                <TextField label="Your name" placeholder="Anonymous" size="small" fullWidth autoFocus
+                  value={playerName}
+                  disabled={saveState === "saving"}
+                  slotProps={{ htmlInput: { maxLength: 30 } }} // Same limit as the backend validation
+                  onChange={(e) => setPlayerName(e.target.value)} />
+                <Button type="submit" variant="contained" fullWidth disabled={saveState === "saving"}>
+                  Save score
+                </Button>
+                {saveState === "error" && <p className="save-error" role="alert">Couldn't save. Try again.</p>}
+              </form>
+            )}
+
             <div className="game-over-actions">
-              <Button component={Link} to="/" variant="contained">Play again</Button>
+              <Button component={Link} to="/" variant={saveState === "saved" ? "contained" : "outlined"}>Play again</Button>
               <Button component={Link} to="/scores" variant="outlined">Scores</Button>
             </div>
           </div>

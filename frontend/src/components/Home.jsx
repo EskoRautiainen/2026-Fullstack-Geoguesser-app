@@ -4,7 +4,6 @@ import { useState } from "react";
 // MUI imports
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Button from "@mui/material/Button";
@@ -20,15 +19,11 @@ function Home({ setGameConfig }) {
   const navigate = useNavigate();
 
   const [settings, setSettings] = useState({ region: "europe", difficulty: "easy", mode: "nameflag" });
-  const [username, setUsername] = useState("");
 
-  // Start game function (also runs on Enter in the name field)
+  // Start game function. The player's name is asked on the game-over card.
   const startGame = (e) => {
     e.preventDefault();
-    const name = username.trim();
-    if (!name) return; // Don't start game if username is empty
-
-    setGameConfig({ ...settings, username: name });
+    setGameConfig(settings);
     navigate("/play");
 };
 
@@ -40,13 +35,7 @@ return (
     <div className="home">
       <Paper component="form" onSubmit={startGame} variant="outlined" className="home-card">
         <Typography variant="h5" component="h1" fontWeight={700}>GeoGuesser</Typography>
-        <Typography color="text.secondary" sx={{ mb: 3 }}>Find countries on the map.</Typography>
-
-        {/* Username */}
-        <TextField label="Your name" required fullWidth size="small" autoFocus
-          value={username}
-          slotProps={{ htmlInput: { maxLength: 30 } }} // Same limit as the backend validation
-          onChange={(e) => setUsername(e.target.value)} />
+        <Typography color="text.secondary" sx={{ mb: 1 }}>Find countries on the map.</Typography>
 
         {SETTINGS.map(([key, label, options]) => (
           <div key={key} className="home-setting">
@@ -65,7 +54,7 @@ return (
           </div>
         ))}
 
-        <Button type="submit" variant="contained" size="large" fullWidth disabled={!username.trim()} sx={{ mt: 3 }}>
+        <Button type="submit" variant="contained" size="large" fullWidth autoFocus sx={{ mt: 3 }}>
           Start
         </Button>
       </Paper>

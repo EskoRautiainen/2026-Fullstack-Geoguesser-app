@@ -207,6 +207,25 @@
   color: var(--muted);
 }
 
+.save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.game-over-card .save-done {
+  margin-top: 20px;
+  color: var(--good);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.game-over-card .save-error {
+  color: var(--bad);
+  font-size: 0.875rem;
+}
+
 .game-over-actions {
   display: flex;
   gap: 8px;

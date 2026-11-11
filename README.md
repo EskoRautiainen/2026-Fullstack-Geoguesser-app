@@ -46,9 +46,9 @@ Then open http://localhost:3000.
 
 ## How to play
 
-1. On the home page, choose a **region** (Europe, Africa or Asia), a **difficulty** and a **game mode**, then enter your name. The Start button stays disabled until you enter a name.
+1. On the home page, choose a **region** (Europe, Africa or Asia), a **difficulty** and a **game mode**, then press **Start**.
 2. Click the country you are asked to find. You have three guesses per country.
-3. After the last round, your result is saved automatically and appears on the **Scores** page.
+3. After the last round, enter your name and press **Save score** to put your result on the **Scores** page. An empty name saves as "Anonymous". A game you leave without saving is not recorded.
 
 | Setting | Options |
 |---------|---------|
