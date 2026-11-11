@@ -3,6 +3,7 @@
 //  -------------------------------------------------------------------------------------------------------------------}
 import { createTheme } from "@mui/material/styles";
 
+// Colours match the CSS variables in index.css; change both together
 const theme = createTheme({
     palette: {
         mode: "dark",

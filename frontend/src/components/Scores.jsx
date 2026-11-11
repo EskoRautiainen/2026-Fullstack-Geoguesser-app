@@ -17,7 +17,7 @@ function Board({ title, games }) {
             ) : (
                 <ol className="board-list">
                     {games.map((g, i) => (
-                        <li key={g.gameId}> {/* React needs an unique key for each item */}
+                        <li key={g.gameId}>
                             <span className={`rank ${i < 3 ? "top" : ""}`}>{i + 1}</span>
                             <span className="player">
                                 {g.username}
