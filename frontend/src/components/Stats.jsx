@@ -35,10 +35,11 @@ export function StatsGrid2({
             Click on: {" "}
             {currentTarget && (
             <b>
-            {mode === "nameflag" | mode === "flag" && (
+            {(mode === "nameflag" || mode === "flag") && (
             <img
                 src={currentTarget.flag}
-                alt={`${currentTarget.name} flag`}
+                // In flag-only mode the alt text must not reveal the answer
+                alt={mode === "nameflag" ? `${currentTarget.name} flag` : "Flag of the country to find"}
                 width={40}
                 height={25}
                 style={{ margin: "0 5px" }}
@@ -55,7 +56,7 @@ export function StatsGrid2({
             You clicked: {" "}
             {clickedCountry ? (
             <b>
-            {mode === "nameflag" | mode === "flag" && (
+            {(mode === "nameflag" || mode === "flag") && (
             <img
                 src={clickedCountry.flag}
                 alt={`${clickedCountry.name} flag`}
